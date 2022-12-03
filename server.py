@@ -106,10 +106,6 @@ def check_for_new_updates():
                 for update in data["result"]:
                     print(update)
                     try:
-                        #{'update_id': 38532680, 'message': {'message_id': 10706, 'from': {'id': 564733099, 'is_bot': False, 'first_name': 'Anon', 'username': 'A_Little_Anon', 'language_code': 'en'}, 'chat': {'id': 564733099, 'first_name': 'Anon', 'username': 'A_Little_Anon', 'type': 'private'}, 'date': 1670021704, 'text': 'Ugh. HI again'}}
-                        # {'update_id': 38532681, 'message': {'message_id': 10707, 'from': {'id': 564733099, 'is_bot': False, 'first_name': 'Anon', 'username': 'A_Little_Anon', 'language_code': 'en'}, 'chat': {'id': -614125039, 'title': 'LOKI EXTENSION LOGS GROUP', 'type': 'group', 'all_members_are_administrators': True}, 'date': 1670022564, 'text': 'Hi'}}
-                        # {'update_id': 38532682, 'message': {'message_id': 10708, 'from': {'id': 564733099, 'is_bot': False, 'first_name': 'Anon', 'username': 'A_Little_Anon', 'language_code': 'en'}, 'chat': {'id': 564733099, 'first_name': 'Anon', 'username': 'A_Little_Anon', 'type': 'private'}, 'date': 1670022620, 'text': 'Finally, Xup?'}}
-                        # {'update_id': 38532689, 'edited_message': {'message_id': 10722, 'from': {'id': 564733099, 'is_bot': False, 'first_name': 'Anon', 'username': 'A_Little_Anon', 'language_code': 'en'}, 'chat': {'id': 564733099, 'first_name': 'Anon', 'username': 'A_Little_Anon', 'type': 'private'}, 'date': 1670032943, 'edit_date': 1670033025, 'text': 'Come up with a short, but captivating mystery plot involving a brilliant use of poison'}}
                         key = 'message' if 'message' in update else 'edited_message'
 
                         try:
