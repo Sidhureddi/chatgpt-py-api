@@ -38,6 +38,6 @@ python server.py
 
 # Credit
 
-* Thanks to 
+### Thanks to 
 - [Daniel Gross](https://github.com/danielgross/whatsapp-gpt). He initially built this as a whatsapp bot that interacts with chatGPT.
 - [Taranjeet](https://github.com/taranjeet/chatgpt-api): He took the script as an individual file and added documentation for how to install and run it with python.
