@@ -18,7 +18,7 @@ virtualenv -p $(which python3) pyenv
 source pyenv/bin/activae
 ```
 
-* Now install the requirements
+* Now install the dependencies from `requirements.txt`
 
 ```
 python requirements.txt
@@ -36,17 +36,8 @@ playwright install
 python server.py
 ```
 
-* The server runs at port `5001`. If you want to change, you can change it in server.py
-
-
-# Api Documentation
-
-* There is a single end point only. It is available at `/chat`
-
-```
-curl -XGET -d 'Write a python program to reverse a list' 'localhost:5001/chat'
-```
-
 # Credit
 
-* All the credit for this script goes to [Daniel Gross's whatsapp gpt](https://github.com/danielgross/whatsapp-gpt) package. I have just taken the script as an individual file and added documentation for how to install and run it.
+* Thanks to 
+- [Daniel Gross](https://github.com/danielgross/whatsapp-gpt). He initially built this as a whatsapp bot that interacts with chatGPT.
+- [Taranjeet](https://github.com/taranjeet/chatgpt-api): He took the script as an individual file and added documentation for how to install and run it with python.

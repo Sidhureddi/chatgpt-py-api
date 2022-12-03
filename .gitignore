@@ -44,3 +44,8 @@ venv.bak/
 
 # Cython debug symbols
 cython_debug/
+
+# extra
+./test.py
+/test.py
+test.py
