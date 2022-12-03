@@ -112,8 +112,14 @@ def check_for_new_updates():
                         # {'update_id': 38532689, 'edited_message': {'message_id': 10722, 'from': {'id': 564733099, 'is_bot': False, 'first_name': 'Anon', 'username': 'A_Little_Anon', 'language_code': 'en'}, 'chat': {'id': 564733099, 'first_name': 'Anon', 'username': 'A_Little_Anon', 'type': 'private'}, 'date': 1670032943, 'edit_date': 1670033025, 'text': 'Come up with a short, but captivating mystery plot involving a brilliant use of poison'}}
                         key = 'message' if 'message' in update else 'edited_message'
 
-                        #  get the chat id
-                        chat_id = update[key]["chat"]["id"]
+                        try:
+                            #  get the chat id
+                            chat_id = update[key]["chat"]["id"]
+                            message_id = update[key]["message_id"]
+                        except:
+                            last_update = update['update_id']
+                            print("Neither message nor edited_message found in update")
+                            continue
                         # print chat id and message id
                         # print(f"Chat ID: {chat_id}, Message ID: {message_id}")
                         if not check_chat_id(chat_id):
@@ -121,7 +127,6 @@ def check_for_new_updates():
                             print("Chat ID not allowed")
                             continue
                         #  get the message
-                        message_id = update[key]["message_id"]
                         message = update[key]["text"]
                         #  send the message to openai and receive a response
                         response = send_and_receive(message)
