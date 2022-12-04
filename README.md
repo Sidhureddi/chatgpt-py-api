@@ -33,7 +33,7 @@ python server.py
 - [Taranjeet](https://github.com/taranjeet/chatgpt-api): He took the script as an individual file and added documentation for how to install and run it with python.
 
 # Article
-The article associated with this repo is available [here]().
+The article associated with this repo is available here: [Creating a Telegram chatbot with ChatGPT: A Step-by-Step Guide]().
 
 The article was largely written by ChatGPT. Here are some screenshots:
 ![Function for checking for new updates](screenshots/154df2f2-908b-44c2-928b-6efcb1129af1.png) 

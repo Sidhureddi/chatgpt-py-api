@@ -105,9 +105,11 @@ def check_for_new_updates():
                             #  get the chat id
                             chat_id = update[key]["chat"]["id"]
                             message_id = update[key]["message_id"]
+                            #  get the message
+                            message = update[key]["text"]
                         except:
                             last_update = update['update_id']
-                            print("Neither message nor edited_message found in update")
+                            print("This update is not a valid message or edited_message")
                             continue
                         # print chat id and message id
                         # print(f"Chat ID: {chat_id}, Message ID: {message_id}")
@@ -115,8 +117,6 @@ def check_for_new_updates():
                             last_update = update['update_id']
                             print("Chat ID not allowed")
                             continue
-                        #  get the message
-                        message = update[key]["text"]
                         #  send the message to openai and receive a response
                         response = send_and_receive(message)
                         # #  send the response to telegram
