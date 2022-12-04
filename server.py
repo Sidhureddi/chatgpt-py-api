@@ -10,13 +10,6 @@ from playwright.sync_api import sync_playwright
 
 
 load_dotenv()
-# start the browser
-PLAY = sync_playwright().start()
-BROWSER = PLAY.chromium.launch_persistent_context(
-    user_data_dir="/tmp/playwright",
-    headless=False,
-)
-PAGE = BROWSER.new_page()
 
 # chatGPT methods
 def get_input_box():
@@ -56,7 +49,7 @@ def send_and_receive(message, trial=1):
     if (not response or re.match(r"^[^a-zA-Z0-9]$", response)) and trial <= 3:
         print("No response from chatGPT, trying again")
         return send_and_receive(message, trial=trial*1.5)
-    elif trial >= 3:
+    elif trial > 3:
         print("No response from chatGPT, giving up")
         return "<ChatGPT is not responding.>"
     return response
@@ -136,17 +129,23 @@ def check_for_new_updates():
                 print("No new updates")
                 return None
     # print an error message with the response
-    print("Error getting updates or:", response.text)
-    return None
+    print("Error getting updates:", response.text)
 
 def check_for_new_updates_periodically():
-    """Check for new updates every 2 seconds"""
     while True:
         check_for_new_updates()
         time.sleep(5)
 
 
 def start_browser():
+    # start the browser
+    global PAGE
+    PLAY = sync_playwright().start()
+    BROWSER = PLAY.chromium.launch_persistent_context(
+        user_data_dir="/tmp/playwright",
+        headless=True, # set to False to see the browser. This is required for login
+    )
+    PAGE = BROWSER.new_page()
     PAGE.goto("https://chat.openai.com/")
     if not is_logged_in():
         print("Please log in to OpenAI Chat")
