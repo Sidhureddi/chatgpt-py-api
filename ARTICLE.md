@@ -1,31 +1,31 @@
 ## Introduction
 
-In this tutorial, we will be building a telegram bot that can interact with OpenAI's chatbot, [ChatGPT](https://openai.com/blog/chatgpt/). ChatGPT is a large language model that can understand and generate human-like text. 
+In this tutorial, we will be building a telegram bot that can interact with OpenAI's chatbot, [ChatGPT](https://openai.com/blog/ChatGPT/). ChatGPT is a large language model that can understand and generate human-like text. 
 
 This tutorial will show you how to create a telegram bot that can send messages to ChatGPT and receive responses from it.
 
 ## Table Of Contents
-  * [Prerequisites](#prerequisites)
-  * [Getting Started](#importing)
-    * [Importing libraries](#importing)
-    * [Setting up environment variables](#setup-env)
-    * [Loading environment variables](#load-env)
-  * [Creating the ChatGPT methods](#chatgpt-methods)
-  * [Sending and receiving data from ChatGPT](#communicating-with-chatgpt)
-  * [Creating the Telegram methods](#telegram-methods)
-  * [Listening for telegram messages](#watching-for-messages)
-  * [Starting up](#starting-up)
-  * [Results](#results)
-  * [Conclusion](#conclusion)
- <a name="creating-pusher-channel"></a>
+- [Introduction](#introduction)
+- [Table Of Contents](#table-of-contents)
+- [Prerequisites ](#prerequisites-)
+- [Step 1: Import the necessary libraries ](#step-1-import-the-necessary-libraries-)
+- [Step 2: Setup environment variables ](#step-2-setup-environment-variables-)
+- [Step 3: Load the environment variables ](#step-3-load-the-environment-variables-)
+- [Step 4: Define the ChatGPT methods ](#step-4-define-the-chatgpt-methods-)
+- [Step 5: Define the send\_and\_receive method ](#step-5-define-the-send_and_receive-method-)
+- [Step 6: Define the telegram methods ](#step-6-define-the-telegram-methods-)
+- [Step 7: Listening for messages ](#step-7-listening-for-messages-)
+- [Step 8: Starting up our app ](#step-8-starting-up-our-app-)
+- [Results  ](#results--)
+- [Conclusion  ](#conclusion--)
 
 ## Prerequisites <a name="prerequisites"></a>
-- A telegram account and a telegram bot. If ypu do not have a telegram bot, you can easily create one by following [these steps](https://core.telegram.org/bots/features#creating-a-new-bot).
+- A telegram account and a telegram bot. If you do not have a telegram bot, you can easily create one by following [these steps](https://core.telegram.org/bots/features#creating-a-new-bot).
 - An OpenAI account. You can create one [here](https://chat.openai.com/auth/login).
 - Python 3.7 or higher installed on your system
 - The requests, playwright, and dotenv libraries installed using pip
 
-**Lets Begin!**
+**Let's Begin!**
 
 ## Step 1: Import the necessary libraries <a name="importing"></a>
 
@@ -33,7 +33,7 @@ Before we can start building our telegram bot, we need to import the necessary l
 
 We will be using the `requests` library to make HTTP requests to the telegram API, the `playwright` library to interact with ChatGPT, and the `dotenv` and `os` library to load our OpenAI API credentials from the environment variables.
 
-Additionally, we will be using the `time` and `re` libraries for pausing code execution and checking regular expressions respectively. 
+Additionally, we will be using the `time` and `re` libraries for pausing code execution and checking regular expressions, respectively. 
 
 If you do not have any of the libraries, simply install them by using the `pip install` command.
 
@@ -47,10 +47,10 @@ from playwright.sync_api import sync_playwright
 ```
 ## Step 2: Setup environment variables <a name="setup-env"></a>
 
-First, it's time to setup our environment variables.
+First, it's time to set up our environment variables.
 The TELEGRAM_TOKEN environment variable is used to store the token for our telegram bot. This is a long string of letters and numbers that is used to authenticate our bot with the telegram API. We need this token to be able to send and receive messages from telegram. 
 
-The CHAT_ID environment variable is used to store a comma-seperated collection of the chat ID's of the chats who are allowed to use our bot. The chat_id is a unique identifier for each chat on telegram, and we can use it to only allow certain users to use our bot. This way, we can keep our bot private and only allow our friends to use it.
+The CHAT_ID environment variable is used to store a comma-separated collection of the chat ID's of the chats who are allowed to use our bot. The chat_id is a unique identifier for each chat on telegram, and we can use it to only allow certain users to use our bot. This way, we can keep our bot private and only allow our friends to use it.
 
 > NOTE: The CHAT_ID env variable is optional.
 
@@ -67,9 +67,9 @@ Next, we will load our OpenAI API credentials from the environment variables. We
 load_dotenv()
 ```
 
-## Step 4: Define the ChatGPT methods <a name="chatgpt-methods"></a>
+## Step 4: Define the ChatGPT methods <a name="ChatGPT-methods"></a>
 
-Next, we will define a few methods that will allow us to interact with ChatGPT. The first method, `get_input_box`, will return the textarea where we can enter our messages to chatGPT.
+Next, we will define a few methods that will allow us to interact with ChatGPT. The first method, `get_input_box`, will return the textarea where we can enter our messages to ChatGPT.
 
 The `is_logged_in` method will check if we are logged in to ChatGPT by looking for the `root` data-id on the input textarea. 
 
@@ -105,11 +105,11 @@ def get_last_message():
 The `get_last_message` method is used to retrieve the latest message from ChatGPT. 
 It does this by querying the page for _div_ elements with the _ConversationItem__Message_ class. This class is used by ChatGPT to style messages, so by querying for elements with this class, we can find the latest message from ChatGPT. 
 
-The method first retrieves the inner text of the last element with this class, then waits for one second and retrieves the inner text of the last element with this class again. If the two texts are the same, it returns the text. If they are different, it means that the last message has changed and it calls itself again to retrieve the latest message. 
+The method first retrieves the inner text of the last element with this class, then waits for one second and retrieves the inner text of the last element with this class again. If the two texts are the same, it returns the text. If they are different, it means that the last message has changed, and it calls itself again to retrieve the latest message. 
 
 This is necessary because ChatGPT may take some time to generate a response, so we need to make sure we only return a complete response, and not one that is still being generated by ChatGPT.
 
-## Step 5: Define the send_and_receive method <a name="communicating-with-chatgpt"></a>
+## Step 5: Define the send_and_receive method <a name="communicating-with-ChatGPT"></a>
 
 Next, we will define the `send_and_receive` method, which will be used to send a message to ChatGPT and get a response from it. This method takes a message as input and sends it to ChatGPT using the `send_message` method we defined earlier. It then waits for a response from ChatGPT and returns it. If ChatGPT doesn't respond within a certain amount of time, the method will retry a few times before giving up and returning an error message.
 
@@ -268,22 +268,27 @@ When this script is run, the following will happen:
 1. The start_browser function will be called to start the browser, navigate to the OpenAI Chat website, and check if the user is logged in or not.
 2. If the user is not logged in to OpenAI Chat, a message will be printed asking the user to log in.
 3. If the user is logged in, the check_for_new_updates_periodically function will be called to start the main loop of our code, which listens for telegram messages and responds accordingly. 
+
 ----------
 
-# Results  <a name="results"></a>
+
+## Results  <a name="results"></a>
 Our ChatGPT Bot is up and running!
 ![A conversation about apples](screenshots/conversation-apple.jpg)
+![A conversation about apples](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/i3v47m9ucofpcasvyzlc.jpg)
 
-# Conclusion  <a name="conclusion"></a>
-In conclusion, this article has shown you how to create a telegram bot for chatGPT using the playwright library and the telegram API. We explained each step in detail, and provided code snippets for each step.
+## Conclusion  <a name="conclusion"></a>
+In conclusion, this article has shown you how to create a telegram bot for ChatGPT using the playwright library and the telegram API. We explained each step in detail, and provided code snippets for each step.
 
-We hope that this tutorial was helpful, and that you now have a better understanding of how to create a telegram bot for chatGPT. Remember that you can customize [the code](https://github.com/Leigh-Ola/chatgpt-py-api/tree/tg-branch) to suit your needs, and experiment with different settings and options to see how they affect the behavior of your bot.
+We hope that this tutorial was helpful, and that you now have a better understanding of how to create a telegram bot for ChatGPT. Remember that you can customize [the code](https://github.com/Leigh-Ola/ChatGPT-py-api/tree/tg-branch) to suit your needs, and experiment with different settings and options to see how they affect the behavior of your bot.
 
-It's also worth mentioning that the majority of this article was written by chatGPT, a large language model trained by OpenAI. chatGPT was able to understand the code and provide clear explanations and examples, so it's a great tool for developers who want to learn more about creating bots and other applications. You can try it out for yourself by visiting https://beta.openai.com/docs/chat/overview.
+It's also worth mentioning that the majority of this article was written by ChatGPT, a large language model trained by OpenAI. ChatGPT was able to understand the code and provide clear explanations and examples, so it's a great tool for developers who want to learn more about creating bots and other applications. You can try it out for yourself by visiting https://beta.openai.com/docs/chat/overview.
 
 ![The Great Reveal](screenshots/reveal.png)
+![The Great Reveal](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/oj2h3uzjkuyhfoxczlxl.png)
 
 ----------
-You check out the repo for this project [here](https://github.com/Leigh-Ola/chatgpt-py-api/tree/tg-branch).
+You check out the repo for this project [here](https://github.com/Leigh-Ola/ChatGPT-py-api/tree/tg-branch).
 
+That's all for now.
 Bye! 🖖

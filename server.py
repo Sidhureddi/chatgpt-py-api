@@ -143,7 +143,7 @@ def start_browser():
     PLAY = sync_playwright().start()
     BROWSER = PLAY.chromium.launch_persistent_context(
         user_data_dir="/tmp/playwright",
-        headless=True, # set to False to see the browser. This is required for login
+        headless=False, # set to False to see the browser. This is required for login
     )
     PAGE = BROWSER.new_page()
     PAGE.goto("https://chat.openai.com/")

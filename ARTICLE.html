@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Introduction</title>
+        <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+/* From extension ms-toolsai.jupyter */
+/* These classnames are inherited from bootstrap, but are present in most notebook renderers */
+
+.alert {
+    width: auto;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.alert > *:last-child {
+    margin-bottom: 0;
+}
+#preview > .alert:last-child {
+    /* Prevent this being set to zero by the default notebook stylesheet */
+    padding-bottom: 1em;
+}
+
+.alert-success {
+    /* Note there is no suitable color available, so we just copy "info" */
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-info {
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-warning {
+    background-color: var(--theme-warning-background);
+    color: var(--theme-warning-foreground);
+}
+.alert-danger {
+    background-color: var(--theme-error-background);
+    color: var(--theme-error-foreground);
+}
+
+</style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h2 id="introduction">Introduction</h2>
+<p>In this tutorial, we will be building a telegram bot that can interact with OpenAI's chatbot, <a href="https://openai.com/blog/chatgpt/">ChatGPT</a>. ChatGPT is a large language model that can understand and generate human-like text.</p>
+<p>This tutorial will show you how to create a telegram bot that can send messages to ChatGPT and receive responses from it.</p>
+<h2 id="table-of-contents">Table Of Contents</h2>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#table-of-contents">Table Of Contents</a></li>
+<li><a href="#prerequisites-">Prerequisites </a></li>
+<li><a href="#step-1-import-the-necessary-libraries-">Step 1: Import the necessary libraries </a></li>
+<li><a href="#step-2-setup-environment-variables-">Step 2: Setup environment variables </a></li>
+<li><a href="#step-3-load-the-environment-variables-">Step 3: Load the environment variables </a></li>
+<li><a href="#step-4-define-the-chatgpt-methods-">Step 4: Define the ChatGPT methods </a></li>
+<li><a href="#step-5-define-the-send_and_receive-method-">Step 5: Define the send_and_receive method </a></li>
+<li><a href="#step-6-define-the-telegram-methods-">Step 6: Define the telegram methods </a></li>
+<li><a href="#step-7-listening-for-messages-">Step 7: Listening for messages </a></li>
+<li><a href="#step-8-starting-up-our-app-">Step 8: Starting up our app </a></li>
+<li><a href="#results--">Results  </a></li>
+<li><a href="#conclusion--">Conclusion  </a></li>
+</ul>
+<h2 id="prerequisites-">Prerequisites <a name="prerequisites"></a></h2>
+<ul>
+<li>A telegram account and a telegram bot. If ypu do not have a telegram bot, you can easily create one by following <a href="https://core.telegram.org/bots/features#creating-a-new-bot">these steps</a>.</li>
+<li>An OpenAI account. You can create one <a href="https://chat.openai.com/auth/login">here</a>.</li>
+<li>Python 3.7 or higher installed on your system</li>
+<li>The requests, playwright, and dotenv libraries installed using pip</li>
+</ul>
+<p><strong>Lets Begin!</strong></p>
+<h2 id="step-1-import-the-necessary-libraries-">Step 1: Import the necessary libraries <a name="importing"></a></h2>
+<p>Before we can start building our telegram bot, we need to import the necessary libraries.</p>
+<p>We will be using the <code>requests</code> library to make HTTP requests to the telegram API, the <code>playwright</code> library to interact with ChatGPT, and the <code>dotenv</code> and <code>os</code> library to load our OpenAI API credentials from the environment variables.</p>
+<p>Additionally, we will be using the <code>time</code> and <code>re</code> libraries for pausing code execution and checking regular expressions respectively.</p>
+<p>If you do not have any of the libraries, simply install them by using the <code>pip install</code> command.</p>
+<pre><code class="language-py"><span class="hljs-keyword">import</span> time
+<span class="hljs-keyword">import</span> re
+<span class="hljs-keyword">import</span> os
+<span class="hljs-keyword">import</span> requests
+<span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv
+<span class="hljs-keyword">from</span> playwright.sync_api <span class="hljs-keyword">import</span> sync_playwright
+</code></pre>
+<h2 id="step-2-setup-environment-variables-">Step 2: Setup environment variables <a name="setup-env"></a></h2>
+<p>First, it's time to setup our environment variables.
+The TELEGRAM_TOKEN environment variable is used to store the token for our telegram bot. This is a long string of letters and numbers that is used to authenticate our bot with the telegram API. We need this token to be able to send and receive messages from telegram.</p>
+<p>The CHAT_ID environment variable is used to store a comma-seperated collection of the chat ID's of the chats who are allowed to use our bot. The chat_id is a unique identifier for each chat on telegram, and we can use it to only allow certain users to use our bot. This way, we can keep our bot private and only allow our friends to use it.</p>
+<blockquote>
+<p>NOTE: The CHAT_ID env variable is optional.</p>
+</blockquote>
+<p>We will create a <code>.env</code> file at the root of our project. It should look something like this:</p>
+<pre><code class="language-console">TELEGRAM_TOKEN=123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
+CHAT_ID=-246810121416, 0123456789
+</code></pre>
+<h2 id="step-3-load-the-environment-variables-">Step 3: Load the environment variables <a name="load-env"></a></h2>
+<p>Next, we will load our OpenAI API credentials from the environment variables. We will use the <code>load_dotenv</code> function to load the environment variables from a file named .env in the same directory as our script.</p>
+<pre><code class="language-py">load_dotenv()
+</code></pre>
+<h2 id="step-4-define-the-chatgpt-methods-">Step 4: Define the ChatGPT methods <a name="chatgpt-methods"></a></h2>
+<p>Next, we will define a few methods that will allow us to interact with ChatGPT. The first method, <code>get_input_box</code>, will return the textarea where we can enter our messages to chatGPT.</p>
+<p>The <code>is_logged_in</code> method will check if we are logged in to ChatGPT by looking for the <code>root</code> data-id on the input textarea.</p>
+<p>The <code>send_message</code> method will send a message to ChatGPT by entering the message in the input textarea and pressing the Enter key.</p>
+<p>Finally, the <code>get_last_message</code> method will return the latest message from ChatGPT by querying the page for div elements with the <em>ConversationItem__Message</em> class.</p>
+<p>Here's the code:</p>
+<pre><code class="language-py"><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_input_box</span>():
+    <span class="hljs-keyword">return</span> PAGE.query_selector(<span class="hljs-string">&quot;textarea&quot;</span>)
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">is_logged_in</span>():
+    <span class="hljs-keyword">return</span> get_input_box() <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">send_message</span>(<span class="hljs-params">message</span>):
+    box = get_input_box()
+    box.click()
+    box.fill(message)
+    box.press(<span class="hljs-string">&quot;Enter&quot;</span>)
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">get_last_message</span>():
+    last_page_element_text = PAGE.query_selector_all(<span class="hljs-string">&quot;div[class*=&#x27;ConversationItem__Message&#x27;]&quot;</span>)[-<span class="hljs-number">1</span>].inner_text()
+    time.sleep(<span class="hljs-number">1</span>)
+    last_page_element_text_latest = PAGE.query_selector_all(<span class="hljs-string">&quot;div[class*=&#x27;ConversationItem__Message&#x27;]&quot;</span>)[-<span class="hljs-number">1</span>].inner_text()
+    <span class="hljs-keyword">if</span> last_page_element_text == last_page_element_text_latest:
+        <span class="hljs-keyword">return</span> last_page_element_text
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-comment"># print(f&quot;Last message changed from &#x27;{last_page_element_text}&#x27; to &#x27;{last_page_element_text_latest}&#x27;&quot;)</span>
+        <span class="hljs-keyword">return</span> get_last_message()
+</code></pre>
+<p>The <code>get_last_message</code> method is used to retrieve the latest message from ChatGPT.
+It does this by querying the page for <em>div</em> elements with the <em>ConversationItem__Message</em> class. This class is used by ChatGPT to style messages, so by querying for elements with this class, we can find the latest message from ChatGPT.</p>
+<p>The method first retrieves the inner text of the last element with this class, then waits for one second and retrieves the inner text of the last element with this class again. If the two texts are the same, it returns the text. If they are different, it means that the last message has changed and it calls itself again to retrieve the latest message.</p>
+<p>This is necessary because ChatGPT may take some time to generate a response, so we need to make sure we only return a complete response, and not one that is still being generated by ChatGPT.</p>
+<h2 id="step-5-define-the-send_and_receive-method-">Step 5: Define the send_and_receive method <a name="communicating-with-chatgpt"></a></h2>
+<p>Next, we will define the <code>send_and_receive</code> method, which will be used to send a message to ChatGPT and get a response from it. This method takes a message as input and sends it to ChatGPT using the <code>send_message</code> method we defined earlier. It then waits for a response from ChatGPT and returns it. If ChatGPT doesn't respond within a certain amount of time, the method will retry a few times before giving up and returning an error message.</p>
+<p>Here's how the <code>send_and_receive</code> method works:</p>
+<ul>
+<li>The method takes a message as input and sends it to ChatGPT using the send_message method.</li>
+<li>It waits for a response from ChatGPT for a certain amount of time (the longer it takes, the longer it will wait).</li>
+<li>If it receives a response, it will return it.</li>
+<li>If it doesn't receive a response within that time, it will retry a few times (the more it retries, the longer it will wait for a response)</li>
+<li>After the third retry, it will give up and return an error message.</li>
+</ul>
+<pre><code class="language-py"><span class="hljs-keyword">def</span> <span class="hljs-title function_">send_and_receive</span>(<span class="hljs-params">message, trial=<span class="hljs-number">1</span></span>):
+    <span class="hljs-keyword">if</span> trial == <span class="hljs-number">1</span>:
+        send_message(message)
+    time.sleep(<span class="hljs-number">5</span>*trial)
+    response = <span class="hljs-built_in">str</span>(get_last_message()).strip()
+    <span class="hljs-comment"># its important to use a regex to check if the response is empty or not</span>
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">not</span> response <span class="hljs-keyword">or</span> re.match(<span class="hljs-string">r&quot;^[^a-zA-Z0-9]$&quot;</span>, response)) <span class="hljs-keyword">and</span> trial &lt;= <span class="hljs-number">3</span>:
+        <span class="hljs-keyword">return</span> send_and_receive(message, trial=trial*<span class="hljs-number">1.5</span>)
+    <span class="hljs-keyword">elif</span> trial &gt; <span class="hljs-number">3</span>:
+        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&lt;ChatGPT is not responding.&gt;&quot;</span>
+    <span class="hljs-keyword">return</span> response
+</code></pre>
+<h2 id="step-6-define-the-telegram-methods-">Step 6: Define the telegram methods <a name="telegram-methods"></a></h2>
+<p>Next, we will define a few methods that will allow us to interact with the telegram API. The first method, <code>send_message_to_telegram</code>, will be used to send a message to the telegram user who sent the original message to our bot. It takes the message, the <code>chat_id</code> of the user, and the <code>message_id</code> of the original message as input and sends the message to the user using the telegram API.</p>
+<p>The <code>check_chat_id</code> function takes the <code>chat_id</code> of a user as input, and returns True if the user is allowed to use our bot, or False if they are not allowed. This function is used to check if a user is allowed to use our bot or not, based on the list of allowed chat ID's that we specified in the CHAT_ID environment variable. If the <code>CHAT_ID</code> env variable is invalid or unavailable, this function returns True by default.</p>
+<pre><code class="language-py">last_update = <span class="hljs-number">0</span>
+url = <span class="hljs-string">f&quot;https://api.telegram.org/bot<span class="hljs-subst">{os.environ[<span class="hljs-string">&#x27;TELEGRAM_TOKEN&#x27;</span>]}</span>&quot;</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">send_message_to_telegram</span>(<span class="hljs-params">message, chat_id, message_id</span>):
+    <span class="hljs-keyword">global</span> url
+    params = {<span class="hljs-string">&quot;chat_id&quot;</span>: chat_id, <span class="hljs-string">&quot;reply_to_message_id&quot;</span>: message_id, <span class="hljs-string">&quot;text&quot;</span>: message}
+
+    response = requests.get(url+<span class="hljs-string">&quot;/sendMessage&quot;</span>, params)
+    <span class="hljs-keyword">if</span> response.status_code == <span class="hljs-number">200</span>:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Sent response to telegram successfully&quot;</span>)
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Error sending response to telegram:&quot;</span>, response.text)
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span>
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">check_chat_id</span>(<span class="hljs-params">chat_id</span>):
+    <span class="hljs-keyword">try</span>:
+        chat_id_env = os.environ[<span class="hljs-string">&#x27;CHAT_ID&#x27;</span>]
+    <span class="hljs-keyword">except</span>:
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span>
+    <span class="hljs-keyword">if</span> chat_id_env == <span class="hljs-string">&quot;&quot;</span>:
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span>
+    chat_id_list = chat_id_env.split(<span class="hljs-string">&#x27;,&#x27;</span>)
+    chat_id_list = [x.strip() <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> chat_id_list]
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">str</span>(chat_id) <span class="hljs-keyword">in</span> chat_id_list
+</code></pre>
+<p>The <code>check_for_new_updates</code> function is used to check for new updates from the telegram API. This function is called periodically to check for new messages from telegram users.</p>
+<p>Here's how it works:</p>
+<ul>
+<li>The function gets a list of updates from the telegram API using the /getUpdates endpoint</li>
+<li>It then loops through the list of updates and checks for any new messages.</li>
+<li>It skips over invalid (non-message) updates.</li>
+<li>If it finds a valid new message, it checks if the user who sent the message is allowed to use our bot using the check_chat_id method.</li>
+<li>If the user is allowed to use our bot, it sends the message to ChatGPT using the <code>send_and_receive</code> method, and gets a response from ChatGPT.</li>
+<li>It then sends the response to the user who sent the original message using the <code>send_message_to_telegram</code> method.</li>
+</ul>
+<pre><code class="language-py"><span class="hljs-keyword">def</span> <span class="hljs-title function_">check_for_new_updates</span>():
+    params = {<span class="hljs-string">&quot;allowed_updates&quot;</span>: [<span class="hljs-string">&quot;message&quot;</span>]}
+    <span class="hljs-keyword">global</span> last_update
+    <span class="hljs-keyword">if</span> last_update != <span class="hljs-number">0</span>:
+        params[<span class="hljs-string">&#x27;offset&#x27;</span>] = last_update + <span class="hljs-number">1</span>
+
+    response = requests.get(url+<span class="hljs-string">&quot;/getUpdates&quot;</span>, params)
+    <span class="hljs-keyword">if</span> response.status_code == <span class="hljs-number">200</span>:
+        data = response.json()
+        <span class="hljs-keyword">if</span> data[<span class="hljs-string">&quot;ok&quot;</span>]:
+            <span class="hljs-keyword">if</span> data[<span class="hljs-string">&quot;result&quot;</span>]:
+                <span class="hljs-keyword">for</span> update <span class="hljs-keyword">in</span> data[<span class="hljs-string">&quot;result&quot;</span>]:
+                    <span class="hljs-keyword">try</span>:
+                        key = <span class="hljs-string">&#x27;message&#x27;</span> <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;message&#x27;</span> <span class="hljs-keyword">in</span> update <span class="hljs-keyword">else</span> <span class="hljs-string">&#x27;edited_message&#x27;</span>
+
+                        <span class="hljs-keyword">try</span>:
+                            <span class="hljs-comment">#  get the chat id</span>
+                            chat_id = update[key][<span class="hljs-string">&quot;chat&quot;</span>][<span class="hljs-string">&quot;id&quot;</span>]
+                            message_id = update[key][<span class="hljs-string">&quot;message_id&quot;</span>]
+                        <span class="hljs-keyword">except</span>:
+                            last_update = update[<span class="hljs-string">&#x27;update_id&#x27;</span>]
+                            <span class="hljs-comment"># print(&quot;Neither message nor edited_message found in update&quot;)</span>
+                            <span class="hljs-keyword">continue</span>
+                        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> check_chat_id(chat_id):
+                            last_update = update[<span class="hljs-string">&#x27;update_id&#x27;</span>]
+                            <span class="hljs-comment"># print(&quot;Chat ID not allowed&quot;)</span>
+                            <span class="hljs-keyword">continue</span>
+                        <span class="hljs-comment">#  get the message and send it to openai and receive a response</span>
+                        message = update[key][<span class="hljs-string">&quot;text&quot;</span>]
+                        response = send_and_receive(message)
+                        <span class="hljs-comment">#  send the response to telegram</span>
+                        send_message_to_telegram(response, chat_id, message_id)
+                        last_update = update[<span class="hljs-string">&#x27;update_id&#x27;</span>]
+                    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+                        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Error processing update&quot;</span>, update[<span class="hljs-string">&#x27;update_id&#x27;</span>], e)
+                <span class="hljs-keyword">return</span> data[<span class="hljs-string">&quot;result&quot;</span>][<span class="hljs-number">0</span>]
+            <span class="hljs-keyword">else</span>:
+                <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;No new updates&quot;</span>)
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Error getting updates:&quot;</span>, response.text)
+</code></pre>
+<h2 id="step-7-listening-for-messages-">Step 7: Listening for messages <a name="watching-for-messages"></a></h2>
+<p>The <code>check_for_new_updates_periodically</code> function is used to periodically check for new updates from the telegram API. This function is called every 5 seconds, and it calls the <code>check_for_new_updates</code> function that we defined earlier to check for new messages from telegram users. If there are any new messages, the function will process them with ChatGPT using the <code>send_and_receive</code> and send a response with the <code>send_message_to_telegram</code> methods that we defined earlier.</p>
+<p>Here's the code:</p>
+<pre><code class="language-py"><span class="hljs-keyword">def</span> <span class="hljs-title function_">check_for_new_updates_periodically</span>():
+    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:
+        check_for_new_updates()
+        time.sleep(<span class="hljs-number">5</span>)
+</code></pre>
+<h2 id="step-8-starting-up-our-app-">Step 8: Starting up our app <a name="starting-up"></a></h2>
+<p>The <code>start_browser</code> function is used to start the browser and create a new page. This function is called at the beginning of our code, and it uses the playwright library to start the browser and create a new page.
+The start_browser function is used to start the browser, navigate to the OpenAI Chat website, and check if the user is logged in or not.
+This function is called at the beginning of our code, and it uses the playwright library to start the browser, navigate to the OpenAI Chat website, and check if the user is logged in or not.</p>
+<pre><code class="language-py"><span class="hljs-keyword">def</span> <span class="hljs-title function_">start_browser</span>():
+    <span class="hljs-keyword">global</span> PAGE
+    PLAY = sync_playwright().start()
+    BROWSER = PLAY.chromium.launch_persistent_context(
+        user_data_dir=<span class="hljs-string">&quot;/tmp/playwright&quot;</span>,
+        headless=<span class="hljs-literal">False</span>,
+    )
+    PAGE = BROWSER.new_page()
+    PAGE.goto(<span class="hljs-string">&quot;https://chat.openai.com/&quot;</span>)
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> is_logged_in():
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Please log in to OpenAI Chat&quot;</span>)
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Press enter when you&#x27;re done&quot;</span>)
+        <span class="hljs-built_in">input</span>()
+    <span class="hljs-keyword">else</span>:        
+        check_for_new_updates_periodically()
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:
+    start_browser()
+</code></pre>
+<ul>
+<li>The <code>user_data_dir</code> option specifies the directory where the browser's user data will be stored.</li>
+<li>The <code>headless</code> option specifies whether the browser should run in headless mode or not. In this case, the browser is not running in headless mode, so you can see it on your screen when you run the code.</li>
+</ul>
+<blockquote>
+<p>NOTE: It is important to set headless during the first run of the code, so that you can login to OpenAI with your credentials.</p>
+</blockquote>
+<p>When this script is run, the following will happen:</p>
+<ol>
+<li>The start_browser function will be called to start the browser, navigate to the OpenAI Chat website, and check if the user is logged in or not.</li>
+<li>If the user is not logged in to OpenAI Chat, a message will be printed asking the user to log in.</li>
+<li>If the user is logged in, the check_for_new_updates_periodically function will be called to start the main loop of our code, which listens for telegram messages and responds accordingly.</li>
+</ol>
+<hr>
+<h2 id="results--">Results  <a name="results"></a></h2>
+<p>Our ChatGPT Bot is up and running!
+<img src="file:///c:\Users\USER\code\PYTHON\Misc\ChatGPT\chatgpt-py-api\screenshots\conversation-apple.jpg" alt="A conversation about apples"></p>
+<h2 id="conclusion--">Conclusion  <a name="conclusion"></a></h2>
+<p>In conclusion, this article has shown you how to create a telegram bot for chatGPT using the playwright library and the telegram API. We explained each step in detail, and provided code snippets for each step.</p>
+<p>We hope that this tutorial was helpful, and that you now have a better understanding of how to create a telegram bot for chatGPT. Remember that you can customize <a href="https://github.com/Leigh-Ola/chatgpt-py-api/tree/tg-branch">the code</a> to suit your needs, and experiment with different settings and options to see how they affect the behavior of your bot.</p>
+<p>It's also worth mentioning that the majority of this article was written by chatGPT, a large language model trained by OpenAI. chatGPT was able to understand the code and provide clear explanations and examples, so it's a great tool for developers who want to learn more about creating bots and other applications. You can try it out for yourself by visiting <a href="https://beta.openai.com/docs/chat/overview">https://beta.openai.com/docs/chat/overview</a>.</p>
+<p><img src="file:///c:\Users\USER\code\PYTHON\Misc\ChatGPT\chatgpt-py-api\screenshots\reveal.png" alt="The Great Reveal"></p>
+<hr>
+<p>You check out the repo for this project <a href="https://github.com/Leigh-Ola/chatgpt-py-api/tree/tg-branch">here</a>.</p>
+<p>Bye! 🖖</p>
+
+        <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        
+    </body>
+    </html>
