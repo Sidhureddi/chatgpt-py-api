@@ -29,9 +29,11 @@ def send_message(message):
 
 def get_last_message():
     """Get the latest message"""
-    last_page_element_text = PAGE.query_selector_all("div[class*='ConversationItem__Message']")[-1].inner_text()
+    # query = "div[class*='ConversationItem__Message']"
+    query = "div[class*='request-:']"
+    last_page_element_text = PAGE.query_selector_all(query)[-1].inner_text()
     time.sleep(1)
-    last_page_element_text_latest = PAGE.query_selector_all("div[class*='ConversationItem__Message']")[-1].inner_text()
+    last_page_element_text_latest = PAGE.query_selector_all(query)[-1].inner_text()
     if last_page_element_text == last_page_element_text_latest:
         return last_page_element_text
     else:
@@ -100,6 +102,7 @@ def check_for_new_updates():
                     print(update)
                     try:
                         key = 'message' if 'message' in update else 'edited_message'
+                        last_update = update['update_id']
 
                         try:
                             #  get the chat id
@@ -108,20 +111,20 @@ def check_for_new_updates():
                             #  get the message
                             message = update[key]["text"]
                         except:
-                            last_update = update['update_id']
+                            # last_update = update['update_id']
                             print("This update is not a valid message or edited_message")
                             continue
                         # print chat id and message id
                         # print(f"Chat ID: {chat_id}, Message ID: {message_id}")
                         if not check_chat_id(chat_id):
-                            last_update = update['update_id']
+                            # last_update = update['update_id']
                             print("Chat ID not allowed")
                             continue
                         #  send the message to openai and receive a response
                         response = send_and_receive(message)
                         # #  send the response to telegram
                         send_message_to_telegram(response, chat_id, message_id)
-                        last_update = update['update_id']
+                        # last_update = update['update_id']
                     except Exception as e:
                         print("Error processing update", update['update_id'], e)
                 return data["result"][0]

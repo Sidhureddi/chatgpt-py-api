@@ -282,7 +282,7 @@ In conclusion, this article has shown you how to create a telegram bot for ChatG
 
 We hope that this tutorial was helpful, and that you now have a better understanding of how to create a telegram bot for ChatGPT. Remember that you can customize [the code](https://github.com/Leigh-Ola/ChatGPT-py-api/tree/tg-branch) to suit your needs, and experiment with different settings and options to see how they affect the behavior of your bot.
 
-It's also worth mentioning that the majority of this article was written by ChatGPT, a large language model trained by OpenAI. ChatGPT was able to understand the code and provide clear explanations and examples, so it's a great tool for developers who want to learn more about creating bots and other applications. You can try it out for yourself by visiting https://beta.openai.com/docs/chat/overview.
+It's also worth mentioning that **the majority of this article was written by ChatGPT**, a large language model trained by OpenAI. ChatGPT was able to understand the code and provide clear explanations and examples, so it's a great tool for developers who want to learn more about creating bots and other applications. You can try it out for yourself by visiting https://beta.openai.com/docs/chat/overview.
 
 ![The Great Reveal](screenshots/reveal.png)
 ![The Great Reveal](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/oj2h3uzjkuyhfoxczlxl.png)
