@@ -58,7 +58,7 @@ def send_and_receive(message, trial=1):
 
 # Telegram Methods
 last_update = 0
-url = f"https://api.telegram.org/bot{os.environ['TELEGRAM_TOKEN']}"
+url = f"https://api.telegram.org/bot{os.environ['6403057631:AAEPVNM8tvof6tXEJTb7d2-ELMVuynRECvY']}"
 def send_message_to_telegram(message, chat_id, message_id):
     """Check for updates"""
     global url
